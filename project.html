@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>AI-WAF Cyber Dashboard</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  color:white;
+  text-align:center;
+  background: radial-gradient(circle at top,#020617,#000);
+  overflow:hidden;
+}
+
+h1{
+  margin-top:20px;
+  text-shadow:0 0 10px cyan;
+}
+
+.flow{
+  position:relative;
+  height:300px;
+  margin-top:40px;
+}
+
+/* CLIENTS */
+.clients{
+  position:absolute;
+  left:5%;
+  top:100px;
+}
+.client{
+  font-size:30px;
+  margin:10px;
+  animation:float 2s infinite alternate;
+}
+@keyframes float{
+  from{transform:translateY(0);}
+  to{transform:translateY(-10px);}
+}
+
+/* WAF */
+#waf{
+  position:absolute;
+  left:45%;
+  top:90px;
+}
+.shield{
+  font-size:60px;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.2);}
+  100%{transform:scale(1);}
+}
+
+/* SERVER */
+#server{
+  position:absolute;
+  left:80%;
+  top:90px;
+}
+.server{
+  font-size:50px;
+  text-shadow:0 0 15px lime;
+}
+
+/* PACKET */
+#packet{
+  position:absolute;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:cyan;
+  top:140px;
+  left:10%;
+  box-shadow:0 0 15px cyan;
+}
+
+/* TRAIL */
+.trail{
+  position:absolute;
+  width:6px;
+  height:6px;
+  background:cyan;
+  border-radius:50%;
+  opacity:0.5;
+}
+
+/* EXPLOSION */
+.explosion{
+  position:absolute;
+  width:10px;
+  height:10px;
+  background:red;
+  border-radius:50%;
+  animation:explode 0.5s forwards;
+}
+@keyframes explode{
+  to{transform:scale(6);opacity:0;}
+}
+
+/* BUTTONS */
+button{
+  padding:12px 25px;
+  margin:10px;
+  border:none;
+  border-radius:20px;
+  cursor:pointer;
+}
+.normal{background:#22c55e;}
+.sql{background:#ef4444;}
+.xss{background:#f59e0b;}
+
+#status{margin-top:15px;}
+#info{margin-top:20px;}
+
+code{
+  background:#111;
+  padding:5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>🛡️ AI-WAF Simulation</h1>
+
+<div class="flow">
+
+<div class="clients">
+  <div class="client">👤</div>
+  <div class="client">👤</div>
+  <div class="client">👤</div>
+</div>
+
+<div id="waf">
+  <div class="shield">🛡️</div>
+  <p>AI-WAF</p>
+</div>
+
+<div id="server">
+  <div class="server">🖥️</div>
+  <p>Server</p>
+</div>
+
+<div id="packet"></div>
+
+</div>
+
+<button class="normal" onclick="simulate('normal')">Normal</button>
+<button class="sql" onclick="simulate('sql')">SQL Injection</button>
+<button class="xss" onclick="simulate('xss')">XSS Attack</button>
+
+<div id="status">Click to simulate</div>
+<div id="info"></div>
+
+<script>
+
+const packet=document.getElementById("packet");
+
+/* RESET */
+function reset(){
+  packet.style.left="10%";
+  packet.style.top="140px";
+}
+
+/* TRAIL */
+function trail(x,y){
+  let t=document.createElement("div");
+  t.className="trail";
+  t.style.left=x+"%";
+  t.style.top=y+"px";
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),400);
+}
+
+/* MOVE */
+function move(start,end,callback){
+
+  let startTime=null;
+
+  function anim(time){
+    if(!startTime) startTime=time;
+
+    let p=(time-startTime)/1500;
+    if(p>1) p=1;
+
+    let x=start+(end-start)*p;
+    let y=140-40*Math.sin(p*Math.PI);
+
+    packet.style.left=x+"%";
+    packet.style.top=y+"px";
+
+    trail(x,y);
+
+    if(p<1){
+      requestAnimationFrame(anim);
+    }else{
+      callback();
+    }
+  }
+
+  requestAnimationFrame(anim);
+}
+
+/* MAIN */
+function simulate(type){
+
+  /* SAFETY CHECK */
+  if(type!=="normal" && type!=="sql" && type!=="xss"){
+    alert("Invalid type");
+    return;
+  }
+
+  reset();
+
+  let status=document.getElementById("status");
+  let info=document.getElementById("info");
+
+  packet.style.background=(type==="normal")?"lime":"red";
+
+  status.innerHTML="📡 Sending to WAF";
+
+  move(10,45,()=>{
+
+    status.innerHTML="🧠 AI analyzing...";
+
+    setTimeout(()=>{
+
+      if(type==="normal"){
+
+        status.innerHTML="✅ Allowed";
+
+        move(45,80,()=>{
+          status.innerHTML="🎉 Reached Server";
+          info.innerHTML="<p>✔ No threat detected</p>";
+        });
+
+      }else{
+
+        status.innerHTML="🚫 Blocked by WAF";
+
+        /* explosion */
+        let e=document.createElement("div");
+        e.className="explosion";
+        e.style.left="45%";
+        e.style.top="140px";
+        document.body.appendChild(e);
+        setTimeout(()=>e.remove(),500);
+
+        /* FETCH DATA */
+        setTimeout(()=>{
+
+          fetch("http://192.168.0.225:5001/attack/"+type)
+          .then(res=>{
+            if(!res.ok){
+              throw new Error("Server error");
+            }
+            return res.json();
+          })
+          .then(data=>{
+            info.innerHTML=
+            "<h3 style='color:red'>"+data.name+"</h3>"+
+            "<p>"+data.description+"</p>"+
+            "<code>"+data.example+"</code>";
+          })
+          .catch(err=>{
+            console.log(err);
+            info.innerHTML="<p style='color:orange'>⚠ Fetch failed</p>";
+          });
+
+        },600);
+
+      }
+
+    },800);
+
+  });
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>WAF Attack Monitoring</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background:#020617;
+  color:white;
+}
+
+/* header */
+.header{
+  background:#0f172a;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 0 20px rgba(0,255,255,0.2);
+}
+
+h1{
+  margin:0;
+}
+
+/* stats cards */
+.stats{
+  display:flex;
+  justify-content:space-around;
+  margin:20px;
+  flex-wrap:wrap;
+}
+
+.card{
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  padding:20px;
+  border-radius:12px;
+  width:200px;
+  text-align:center;
+  box-shadow:0 0 15px rgba(0,255,255,0.2);
+  margin:10px;
+}
+
+/* table styling */
+.table-container{
+  width:90%;
+  margin:auto;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  border-radius:10px;
+  padding:20px;
+  box-shadow:0 0 20px rgba(0,255,255,0.2);
+  overflow:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:12px;
+  text-align:center;
+}
+
+th{
+  background:#0ea5e9;
+  color:white;
+}
+
+tr{
+  transition:0.3s;
+}
+
+/* hover effect */
+tr:hover{
+  background: rgba(14,165,233,0.2);
+}
+
+/* attack highlight */
+.attack{
+  color:#ef4444;
+  font-weight:bold;
+}
+
+/* IP style */
+.ip{
+  color:#38bdf8;
+}
+
+/* time style */
+.time{
+  color:#a1a1aa;
+  font-size:13px;
+}
+
+/* blinking alert */
+@keyframes blink{
+  0%,100%{opacity:1;}
+  50%{opacity:0.3;}
+}
+
+.alert{
+  animation:blink 1s infinite;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+  <h1>🚨 AI-WAF Attack Monitoring Dashboard</h1>
+</div>
+
+<div class="stats">
+  <div class="card">Total Attacks<br><span id="total">0</span></div>
+  <div class="card">SQL Injection<br><span id="sql">0</span></div>
+  <div class="card">XSS Attacks<br><span id="xss">0</span></div>
+</div>
+
+<div class="table-container">
+<table>
+
+<tr>
+<th>User</th>
+<th>Attack</th>
+<th>IP Address</th>
+<th>Time</th>
+</tr>
+
+<tbody id="logs"></tbody>
+
+</table>
+</div>
+
+<script>
+
+const firebaseURL =
+"https://ai-waf-project-default-rtdb.firebaseio.com/attack_logs.json";
+
+fetch(firebaseURL)
+
+.then(res => res.json())
+
+.then(data => {
+
+let table = document.getElementById("logs")
+table.innerHTML=""
+
+let total = 0
+let sql = 0
+let xss = 0
+
+for(let key in data){
+
+let row = data[key]
+total++
+
+if(row.attack.toLowerCase().includes("sql")) sql++
+if(row.attack.toLowerCase().includes("xss")) xss++
+
+let tr = document.createElement("tr")
+
+tr.innerHTML =
+"<td>"+row.username+"</td>"+
+"<td class='attack alert'>"+row.attack+"</td>"+
+"<td class='ip'>"+row.ip+"</td>"+
+"<td class='time'>"+row.time+"</td>"
+
+table.prepend(tr)   // latest on top
+}
+
+document.getElementById("total").innerText = total
+document.getElementById("sql").innerText = sql
+document.getElementById("xss").innerText = xss
+
+})
+
+.catch(err => console.log(err))
+
+</script>
+
+</body>
+
+</html>

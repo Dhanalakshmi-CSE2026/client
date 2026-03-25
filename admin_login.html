@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login</title>
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background: radial-gradient(circle at center,#1a0000,#000);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
+}
+
+/* pulsing red glow */
+body::before{
+  content:"";
+  position:absolute;
+  width:350px;
+  height:350px;
+  background: radial-gradient(circle,#ff0000,transparent);
+  filter:blur(120px);
+  animation: pulse 3s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:0.2;}
+  50%{opacity:0.5;}
+  100%{opacity:0.2;}
+}
+
+.box{
+  position:relative;
+  background: rgba(255,0,0,0.05);
+  backdrop-filter: blur(15px);
+  padding:35px;
+  border-radius:20px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(255,0,0,0.4);
+}
+
+/* inputs */
+input{
+  width:100%;
+  padding:12px;
+  margin:12px 0;
+  border:none;
+  border-radius:10px;
+  background: rgba(255,255,255,0.1);
+  color:white;
+}
+
+input:focus{
+  box-shadow:0 0 12px red;
+}
+
+/* button */
+button{
+  width:100%;
+  padding:12px;
+  background: linear-gradient(90deg,#ff0000,#ff7300);
+  border:none;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  box-shadow:0 0 20px red;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>🛡️ Admin Secure Access</h2>
+
+<form action="http://192.168.0.135:5000/admin_login" method="POST">
+
+<input type="text" name="username" placeholder="👤 Admin Username" required>
+
+<input type="password" name="password" placeholder="🔒 Password" required>
+
+<button type="submit">Login</button>
+
+</form>
+
+<p class="secure">Restricted Area • AI-WAF Protected</p>
+
+</div>
+
+</body>
+</html>

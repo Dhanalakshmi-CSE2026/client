@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Secure Login</title>
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background: linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
+}
+
+/* animated gradient glow */
+body::before{
+  content:"";
+  position:absolute;
+  width:400px;
+  height:400px;
+  background: radial-gradient(circle,#00f5ff,transparent);
+  filter:blur(120px);
+  animation: move 8s infinite alternate;
+}
+
+@keyframes move{
+  from{transform: translate(-50px,-50px);}
+  to{transform: translate(50px,50px);}
+}
+::placeholder {
+  color: #a5b4fc;   /* soft purple-blue */
+  opacity: 1;
+  font-size: 14px;
+}
+.container{
+  position:relative;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px);
+  padding:35px;
+  border-radius:20px;
+  width:320px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(0,255,255,0.3);
+}
+
+/* inputs */
+input{
+  width:100%;
+  padding:12px;
+  margin:12px 0;
+  border:none;
+  border-radius:10px;
+  background: rgba(255,255,255,0.1);
+  color:white;
+}
+
+/* glow focus */
+input:focus{
+  box-shadow:0 0 12px #00f5ff;
+}
+
+/* button */
+button{
+  width:100%;
+  padding:12px;
+  background: linear-gradient(90deg,#00f5ff,#7c3aed);
+  border:none;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  box-shadow:0 0 20px #00f5ff;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🔐 AI Secure Login</h2>
+
+<form action="https://waf-server-15.onrender.com/waf_login" method="POST">
+
+<input type="text" name="username" placeholder="👤 Username" required>
+
+<input type="password" name="password" placeholder="🔒 Password" required>
+
+<button type="submit">Login</button>
+
+</form>
+
+<br>
+
+<a href="admin_login.html">🛡️ Admin Login</a>
+
+<p class="secure-text">Protected by AI-Based Web Application Firewall</p>
+
+</div>
+
+</body>
+</html>
